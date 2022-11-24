@@ -3,7 +3,7 @@ package services
 import "appointmentScheduler/internal/models"
 
 type Authorization interface {
-	CreateUser(user models.Users) (int, error)
+	CreateUser(user models.User) (int, error)
 	GenerateToken(username, password string) (string, error)
 	ParseToken(accessToken string) (int, error)
 }
@@ -11,13 +11,13 @@ type Authorization interface {
 type Schedule interface {
 }
 
-type Note interface {
+type Appointment interface {
 }
 
 type Service struct {
 	Authorization
 	Schedule
-	Note
+	Appointment
 }
 
 func NewService() *Service {

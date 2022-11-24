@@ -29,13 +29,13 @@ CREATE TABLE clients
 CREATE TABLE appointments
 (
     id serial not null unique,
-    app_day date not null,
-    app_time time not null
+    appointment_day date not null,
+    appointment_time time not null
 );
 
 CREATE TABLE clients_appointments
 (
     id serial not null unique,
     client_id int references clients (id) on delete cascade not null,
-    app_id int references appointments (id) on delete cascade not null
+    appointment_id int references appointments (id) on delete cascade not null
 );
