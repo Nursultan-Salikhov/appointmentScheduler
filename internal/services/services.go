@@ -8,10 +8,11 @@ import (
 type Authorization interface {
 	CreateUser(user models.User) (int, error)
 	GenerateToken(username, password string) (string, error)
-	//ParseToken(accessToken string) (int, error)
+	ParseToken(accessToken string) (int, error)
 }
 
 type Schedule interface {
+	CreateWorkDay(userId int, workDay, startTime, endTime string) (int, error)
 }
 
 type Appointment interface {
@@ -26,5 +27,6 @@ type Service struct {
 func NewService(repo *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repo.Authorization),
+		Schedule:      NewScheduleService(repo.Schedule),
 	}
 }

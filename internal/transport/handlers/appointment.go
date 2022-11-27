@@ -2,10 +2,6 @@ package handlers
 
 import "github.com/gin-gonic/gin"
 
-func (h *Handler) AppointmentIdentity(c *gin.Context) {
-
-}
-
 func (h *Handler) GetAppointments(c *gin.Context) {
 
 }

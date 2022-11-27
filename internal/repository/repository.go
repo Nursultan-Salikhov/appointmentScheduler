@@ -10,10 +10,18 @@ type Authorization interface {
 	GetUser(username, passwordHash string) (models.User, error)
 }
 
+type Schedule interface {
+	CreateWorkDay(userId int, workDay, startTime, endTime string) (int, error)
+}
+
 type Repository struct {
 	Authorization
+	Schedule
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
-	return &Repository{Authorization: NewAuthPostgres(db)}
+	return &Repository{
+		Authorization: NewAuthPostgres(db),
+		Schedule:      NewSchedulePostgres(db),
+	}
 }
