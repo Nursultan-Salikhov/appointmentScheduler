@@ -5,7 +5,6 @@ import (
 	"appointmentScheduler/internal/server"
 	"appointmentScheduler/internal/services"
 	"appointmentScheduler/internal/transport/handlers"
-	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -32,24 +31,8 @@ func main() {
 		logrus.Fatalf("DB connect failed: %s", err.Error())
 	}
 
-	// database test
-	var id int
-	name := "Иван"
-	username := "Ivan"
-	password := "fuck_you"
-
-	query := fmt.Sprintf("INSERT INTO users (name, username, password_hash) values ($1, $2, $3) RETURNING id")
-	row := db.QueryRow(query, name, username, password)
-
-	err = row.Scan(&id)
-	if err != nil {
-		logrus.Fatalf("DB don't return ID")
-	} else {
-		logrus.Println("user create succes, id = ", id)
-	}
-
-	// database test
-	service := services.NewService()
+	rep := repository.NewRepository(db)
+	service := services.NewService(rep)
 	handler := handlers.NewHandler(service)
 	srv := new(server.Server)
 
