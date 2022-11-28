@@ -1,6 +1,7 @@
 package services
 
 import (
+	"appointmentScheduler/internal/models"
 	"appointmentScheduler/internal/repository"
 	"errors"
 	"time"
@@ -41,4 +42,16 @@ func checkDate(day string) error {
 		return errors.New("entered a date that has already passed")
 	}
 	return nil
+}
+
+func (s *ScheduleService) GetSchedules(userId int) ([]models.Schedule, error) {
+	return s.repo.GetSchedules(userId)
+}
+
+func (s *ScheduleService) Update(userId int, day string, input models.UpdateSchedule) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+
+	return s.repo.Update(userId, day, input)
 }

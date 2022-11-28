@@ -13,6 +13,8 @@ type Authorization interface {
 
 type Schedule interface {
 	CreateWorkDay(userId int, workDay, startTime, endTime string) (int, error)
+	GetSchedules(userId int) ([]models.Schedule, error)
+	Update(userId int, day string, input models.UpdateSchedule) error
 }
 
 type Appointment interface {

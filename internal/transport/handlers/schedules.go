@@ -16,7 +16,6 @@ func (h *Handler) CreateWorkDay(c *gin.Context) {
 
 	userId, err := getUserId(c)
 	if err != nil {
-		newErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return
 	}
 
@@ -33,7 +32,18 @@ func (h *Handler) CreateWorkDay(c *gin.Context) {
 }
 
 func (h *Handler) GetSchedules(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
+	schedules, err := h.service.Schedule.GetSchedules(userId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, schedules)
 }
 
 func (h *Handler) GetDetailedSchedule(c *gin.Context) {
@@ -41,7 +51,26 @@ func (h *Handler) GetDetailedSchedule(c *gin.Context) {
 }
 
 func (h *Handler) UpdateDay(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
+	day := c.Param("day")
+
+	var input models.UpdateSchedule
+	err = c.BindJSON(&input)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.service.Schedule.Update(userId, day, input)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "Done"})
 }
 
 func (h *Handler) DeleteDay(c *gin.Context) {
