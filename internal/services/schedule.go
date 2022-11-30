@@ -55,3 +55,7 @@ func (s *ScheduleService) Update(userId int, day string, input models.UpdateSche
 
 	return s.repo.Update(userId, day, input)
 }
+
+func (s *ScheduleService) Delete(userId int, day string) error {
+	return s.repo.Delete(userId, day)
+}

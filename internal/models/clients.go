@@ -1,11 +1,11 @@
 package models
 
 type Client struct {
-	Id          int
-	UserId      int
-	Name        string
-	PhoneNumber string
-	Email       string
-	TGUsername  string
-	description string
+	Id          int    `json:"id"`
+	UserId      int    `json:"user_id"`
+	Name        string `json:"name" binding:"required"`
+	PhoneNumber string `json:"phone_number"`
+	Email       string `json:"email"`
+	TGUsername  string `json:"tg_username"`
+	Description string `json:"description"`
 }

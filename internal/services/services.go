@@ -15,9 +15,11 @@ type Schedule interface {
 	CreateWorkDay(userId int, workDay, startTime, endTime string) (int, error)
 	GetSchedules(userId int) ([]models.Schedule, error)
 	Update(userId int, day string, input models.UpdateSchedule) error
+	Delete(userId int, day string) error
 }
 
 type Appointment interface {
+	Create(appDate models.AllAppointmentDate) (int, error)
 }
 
 type Service struct {
@@ -30,5 +32,6 @@ func NewService(repo *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repo.Authorization),
 		Schedule:      NewScheduleService(repo.Schedule),
+		Appointment:   NewAppointmentService(repo.Appointment),
 	}
 }

@@ -16,9 +16,14 @@ type UpdateSchedule struct {
 }
 
 type Appointment struct {
-	Id      int
-	AppDay  string
-	AppTime string
+	Id      int    `json:"id" db:"id"`
+	AppDay  string `json:"app_day" binding:"required"`
+	AppTime string `json:"app_time" binding:"required"`
+}
+
+type AllAppointmentDate struct {
+	Client  Client      `json:"client"`
+	AppData Appointment `json:"app_data"`
 }
 
 func (u UpdateSchedule) Validate() error {

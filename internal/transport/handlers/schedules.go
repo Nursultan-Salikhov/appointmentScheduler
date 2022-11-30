@@ -74,5 +74,18 @@ func (h *Handler) UpdateDay(c *gin.Context) {
 }
 
 func (h *Handler) DeleteDay(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
+	day := c.Param("day")
+
+	err = h.service.Schedule.Delete(userId, day)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "Done"})
 }

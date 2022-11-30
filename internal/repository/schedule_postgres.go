@@ -2,8 +2,10 @@ package repository
 
 import (
 	"appointmentScheduler/internal/models"
+	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -86,6 +88,39 @@ func (s *SchedulePostgres) Update(userId int, day string, input models.UpdateSch
 
 	args = append(args, userId, day)
 
-	_, err := s.db.Exec(query, args...)
-	return err
+	res, err := s.db.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+
+	numb, err := res.RowsAffected()
+	if err != nil {
+		return err
+	} else if numb == 0 {
+		return errors.New("update is not possible because there is no element")
+	}
+
+	return nil
+}
+
+func (s *SchedulePostgres) Delete(userId int, day string) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s=$1 AND %s=$2",
+		tableSchedules, columnUserId, columnWorkDay)
+
+	res, err := s.db.Exec(query, userId, day)
+	if err != nil {
+		return err
+	}
+
+	numb, err := res.RowsAffected()
+	if err != nil {
+		logrus.Error("RowsAffected failed")
+		return err
+	}
+
+	if numb == 0 {
+		return errors.New("deletion is not possible because there is no element")
+	}
+
+	return nil
 }

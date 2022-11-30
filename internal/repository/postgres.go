@@ -19,6 +19,7 @@ const (
 	tableSchedules    = "schedules"
 	tableClients      = "clients"
 	tableAppointments = "appointments"
+	tableClientsApps  = "clients_appointments"
 
 	columnName            = "name"
 	columnUsername        = "username"
