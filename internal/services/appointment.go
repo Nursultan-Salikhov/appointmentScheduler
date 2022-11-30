@@ -20,3 +20,14 @@ func (a *AppointmentService) Create(appData models.AllAppointmentDate) (int, err
 	}
 	return 0, errors.New("no date for appointment has been created")
 }
+
+func (a *AppointmentService) Get(userId int, day string) ([]models.Appointment, error) {
+	if a.repo.CheckWorkDay(userId, day) {
+		return a.repo.Get(userId, day)
+	}
+	return nil, errors.New("there is no data on the requested date (no working day was created)")
+}
+
+func (a *AppointmentService) GetClientInfo(userId int, day, time string) (models.Client, error) {
+	return a.repo.GetClientInfo(userId, day, time)
+}

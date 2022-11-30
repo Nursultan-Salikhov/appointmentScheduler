@@ -30,18 +30,18 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 			schedules.GET("/", h.GetSchedules)
 
-			schedules.GET("/:day", h.GetDetailedSchedule)
-
 			schedules.PUT("/:day", h.UpdateDay)
 
 			schedules.DELETE("/:day", h.DeleteDay)
 		}
 
 		appointments := user.Group("/appointments")
+
 		{
 			appointments.POST("/", h.CreateAppointment)
-			appointments.GET("/", h.GetAppointments)
 			appointments.DELETE("/", h.DeleteAppointment)
+			appointments.GET("/:day", h.GetAppointments)
+			appointments.GET("/:day/:time", h.GetClientInfo)
 		}
 	}
 

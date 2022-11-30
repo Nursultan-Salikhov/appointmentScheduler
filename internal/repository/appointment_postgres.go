@@ -129,3 +129,40 @@ func (a *AppointmentPostgres) getAppointmentId(userId int, day, time string) (in
 
 	return 0, errors.New("unknown error")
 }
+
+func (a *AppointmentPostgres) Get(userId int, day string) ([]models.Appointment, error) {
+	var appointments []models.Appointment
+	query := fmt.Sprintf(`SELECT a.id, a.%s, a.%s FROM %s a INNER JOIN %s ca ON a.id=ca.%s
+  						INNER JOIN %s c ON ca.%s=c.id WHERE c.%s=$1 AND a.%s=$2`,
+		columnAppointmentDay, columnAppointmentTime, tableAppointments, tableClientsApps,
+		columnAppointmentId, tableClients, columnClientId, columnUserId, columnAppointmentDay)
+
+	err := a.db.Select(&appointments, query, userId, day)
+	if err != nil {
+		return nil, err
+	}
+
+	for id, elem := range appointments {
+		appointments[id].AppDay = correctDateFormat(elem.AppDay)
+		appointments[id].AppTime = correctTimeFormat(elem.AppTime)
+	}
+
+	return appointments, nil
+}
+
+func (a *AppointmentPostgres) GetClientInfo(userId int, day, time string) (models.Client, error) {
+	var clientInfo models.Client
+
+	query := fmt.Sprintf(`SELECT c.id, c.%s, c.%s, c.%s, c.%s, c.%s, c.%s FROM %s c INNER JOIN %s ca ON c.id=ca.%s 
+ 						INNER JOIN %s a ON ca.%s=a.id WHERE c.%s=$1 AND a.%s=$2 AND a.%s=$3`,
+		columnUserId, columnName, columnPhoneNumber, columnEmail, columnTGUsername, columnDescription,
+		tableClients, tableClientsApps, columnClientId, tableAppointments,
+		columnAppointmentId, columnUserId, columnAppointmentDay, columnAppointmentTime)
+
+	err := a.db.Get(&clientInfo, query, userId, day, time)
+	if err != nil {
+		return models.Client{}, err
+	}
+
+	return clientInfo, nil
+}

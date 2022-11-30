@@ -43,22 +43,9 @@ func (s *SchedulePostgres) GetSchedules(userId int) ([]models.Schedule, error) {
 
 	// Making the data more readable
 	for id, elem := range schedules {
-		before, _, found := strings.Cut(elem.WorkDay, "T")
-		if found {
-			schedules[id].WorkDay = before
-		}
-
-		_, after, found := strings.Cut(elem.StartTime, "T")
-		if found {
-			after = strings.TrimRight(after, "00Z")
-			schedules[id].StartTime = strings.TrimRight(after, ":")
-		}
-
-		_, after, found = strings.Cut(elem.EndTime, "T")
-		if found {
-			after = strings.TrimRight(after, "00Z")
-			schedules[id].EndTime = strings.TrimRight(after, ":")
-		}
+		schedules[id].WorkDay = correctDateFormat(elem.WorkDay)
+		schedules[id].StartTime = correctTimeFormat(elem.StartTime)
+		schedules[id].EndTime = correctTimeFormat(elem.EndTime)
 	}
 
 	return schedules, nil

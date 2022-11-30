@@ -46,10 +46,6 @@ func (h *Handler) GetSchedules(c *gin.Context) {
 	c.JSON(http.StatusOK, schedules)
 }
 
-func (h *Handler) GetDetailedSchedule(c *gin.Context) {
-
-}
-
 func (h *Handler) UpdateDay(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {

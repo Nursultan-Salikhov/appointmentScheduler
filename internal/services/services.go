@@ -20,6 +20,8 @@ type Schedule interface {
 
 type Appointment interface {
 	Create(appDate models.AllAppointmentDate) (int, error)
+	Get(userId int, day string) ([]models.Appointment, error)
+	GetClientInfo(userId int, day, time string) (models.Client, error)
 }
 
 type Service struct {

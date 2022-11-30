@@ -17,8 +17,8 @@ type UpdateSchedule struct {
 
 type Appointment struct {
 	Id      int    `json:"id" db:"id"`
-	AppDay  string `json:"app_day" binding:"required"`
-	AppTime string `json:"app_time" binding:"required"`
+	AppDay  string `json:"app_day" binding:"required" db:"appointment_day"`
+	AppTime string `json:"app_time" binding:"required" db:"appointment_time"`
 }
 
 type AllAppointmentDate struct {
