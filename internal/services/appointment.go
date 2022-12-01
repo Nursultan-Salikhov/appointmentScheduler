@@ -31,3 +31,15 @@ func (a *AppointmentService) Get(userId int, day string) ([]models.Appointment, 
 func (a *AppointmentService) GetClientInfo(userId int, day, time string) (models.Client, error) {
 	return a.repo.GetClientInfo(userId, day, time)
 }
+
+func (a *AppointmentService) Update(userId, clientId int, newApp models.Appointment) error {
+
+	if a.repo.CheckWorkDay(userId, newApp.AppDay) {
+		return a.repo.Update(userId, clientId, newApp)
+	}
+	return errors.New("there is no data on the requested date(no working day was created")
+}
+
+func (a *AppointmentService) Delete(userId, clientId int) error {
+	return a.repo.Delete(userId, clientId)
+}

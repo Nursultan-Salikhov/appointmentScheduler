@@ -22,6 +22,8 @@ type Appointment interface {
 	Create(appDate models.AllAppointmentDate) (int, error)
 	Get(userId int, day string) ([]models.Appointment, error)
 	GetClientInfo(userId int, day, time string) (models.Client, error)
+	Update(userId, clientId int, newApp models.Appointment) error
+	Delete(userId, clientId int) error
 }
 
 type Service struct {

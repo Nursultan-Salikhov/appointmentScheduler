@@ -19,7 +19,7 @@ func NewAppointmentPostgres(db *sqlx.DB) *AppointmentPostgres {
 
 func (a *AppointmentPostgres) Create(appDate models.AllAppointmentDate) (int, error) {
 
-	//Check if a date is available for appointment
+	//Check if a date is available for appointment, or create new date
 	appointmentId, err := a.getAppointmentId(appDate.Client.UserId, appDate.AppData.AppDay, appDate.AppData.AppTime)
 	if err != nil {
 		return 0, err
@@ -165,4 +165,57 @@ func (a *AppointmentPostgres) GetClientInfo(userId int, day, time string) (model
 	}
 
 	return clientInfo, nil
+}
+
+func (a *AppointmentPostgres) Update(userId, clientId int, newApp models.Appointment) error {
+	appointmentId, err := a.getAppointmentId(userId, newApp.AppDay, newApp.AppTime)
+	if err != nil {
+		return err
+	}
+
+	//Start transaction
+	tx, err := a.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Remove the old connection between the client and the assigned time
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s=$1", tableClientsApps, columnClientId)
+
+	_, err = tx.Exec(query, clientId)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	//Create client_id and app_id in clients_appointments table
+	query = fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES ($1, $2) RETURNING id",
+		tableClientsApps, columnClientId, columnAppointmentId)
+
+	_, err = tx.Exec(query, clientId, appointmentId)
+	if err != nil {
+		logrus.Errorf("Failed creating data in %s", tableClientsApps)
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (a *AppointmentPostgres) Delete(userId, clientId int) error {
+
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 AND %s=$2", tableClients, columnUserId)
+	res, err := a.db.Exec(query, clientId, userId)
+	if err != nil {
+		return err
+	}
+
+	numbOfDel, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if numbOfDel == 0 {
+		return errors.New("numb of delete = 0, item may have been deleted earlier")
+	}
+	return nil
 }

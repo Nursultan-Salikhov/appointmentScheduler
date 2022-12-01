@@ -27,11 +27,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		schedules := user.Group("/schedules")
 		{
 			schedules.POST("/", h.CreateWorkDay)
-
 			schedules.GET("/", h.GetSchedules)
-
 			schedules.PUT("/:day", h.UpdateDay)
-
 			schedules.DELETE("/:day", h.DeleteDay)
 		}
 
@@ -39,9 +36,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 		{
 			appointments.POST("/", h.CreateAppointment)
-			appointments.DELETE("/", h.DeleteAppointment)
 			appointments.GET("/:day", h.GetAppointments)
 			appointments.GET("/:day/:time", h.GetClientInfo)
+			appointments.PUT("/:clientId", h.UpdateAppointment)
+			appointments.DELETE("/:clientId", h.DeleteAppointment)
 		}
 	}
 
