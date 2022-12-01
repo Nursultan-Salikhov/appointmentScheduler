@@ -3,6 +3,8 @@ package services
 import (
 	"appointmentScheduler/internal/models"
 	"appointmentScheduler/internal/repository"
+	"errors"
+	"time"
 )
 
 type Authorization interface {
@@ -38,4 +40,19 @@ func NewService(repo *repository.Repository) *Service {
 		Schedule:      NewScheduleService(repo.Schedule),
 		Appointment:   NewAppointmentService(repo.Appointment),
 	}
+}
+
+func checkDate(day string) error {
+	now := time.Now()
+	now = now.Add(-(time.Hour * 24))
+
+	workDay, err := time.Parse(dateFormat, day)
+	if err != nil {
+		return err
+	}
+
+	if now.After(workDay) {
+		return errors.New("entered a date that has already passed")
+	}
+	return nil
 }

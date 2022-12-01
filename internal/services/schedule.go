@@ -3,8 +3,6 @@ package services
 import (
 	"appointmentScheduler/internal/models"
 	"appointmentScheduler/internal/repository"
-	"errors"
-	"time"
 )
 
 const (
@@ -27,21 +25,6 @@ func (s *ScheduleService) CreateWorkDay(userId int, workDay, startTime, endTime 
 	}
 
 	return s.repo.CreateWorkDay(userId, workDay, startTime, endTime)
-}
-
-func checkDate(day string) error {
-	now := time.Now()
-	now.Add(-(time.Hour * 48))
-
-	workDay, err := time.Parse(dateFormat, day)
-	if err != nil {
-		return err
-	}
-
-	if now.After(workDay) {
-		return errors.New("entered a date that has already passed")
-	}
-	return nil
 }
 
 func (s *ScheduleService) GetSchedules(userId int) ([]models.Schedule, error) {
