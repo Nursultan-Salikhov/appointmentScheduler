@@ -46,7 +46,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	appointment := router.Group("/:id/appointment", h.AppointmentIdentity)
 	{
 		appointment.POST("/", h.CreateAppointment)
-		appointment.GET("/available", h.GetAvailableAppointment)
+		appointment.GET("/", h.GetSchedules)
+		appointment.GET("/:day", h.GetAppointments)
 	}
 
 	return router

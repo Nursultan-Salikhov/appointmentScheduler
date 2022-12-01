@@ -72,10 +72,6 @@ func (h *Handler) DeleteAppointment(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "done"})
 }
 
-func (h *Handler) GetAvailableAppointment(c *gin.Context) {
-
-}
-
 func (h *Handler) GetClientInfo(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {

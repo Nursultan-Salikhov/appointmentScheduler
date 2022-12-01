@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -38,7 +39,15 @@ func (h *Handler) userIdentity(c *gin.Context) {
 }
 
 func (h *Handler) AppointmentIdentity(c *gin.Context) {
+	userIdString := c.Param("id")
 
+	userId, err := strconv.Atoi(userIdString)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Set(userCtx, userId)
 }
 
 func getUserId(c *gin.Context) (int, error) {
