@@ -39,3 +39,14 @@ CREATE TABLE clients_appointments
     client_id int references clients (id) on delete cascade not null,
     appointment_id int references appointments (id) on delete cascade not null
 );
+
+CREATE TABLE email_settings
+(
+    id serial not null unique,
+    user_id int references users (id) on delete cascade not null,
+    status boolean not null default false,
+    email varchar(255),
+    password_hash varchar(255),
+    host varchar(255),
+    port int
+)
