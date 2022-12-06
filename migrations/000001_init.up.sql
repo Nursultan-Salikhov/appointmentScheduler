@@ -51,7 +51,7 @@ CREATE TABLE notices_templates
 CREATE TABLE email_settings
 (
     id serial not null unique,
-    user_id int references users (id) on delete cascade not null,
+    user_id int references users (id) on delete cascade not null unique,
     status boolean not null default false,
     email varchar(255),
     password_hash varchar(255),
