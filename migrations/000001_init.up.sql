@@ -40,6 +40,14 @@ CREATE TABLE clients_appointments
     appointment_id int references appointments (id) on delete cascade not null
 );
 
+CREATE TABLE notices_templates
+(
+    id serial not null unique,
+    user_id int references users (id) on delete cascade not null unique,
+    appointment_template varchar(255),
+    reminder_template varchar(255)
+);
+
 CREATE TABLE email_settings
 (
     id serial not null unique,
@@ -49,4 +57,4 @@ CREATE TABLE email_settings
     password_hash varchar(255),
     host varchar(255),
     port int
-)
+);

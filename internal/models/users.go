@@ -12,10 +12,20 @@ type SignInData struct {
 	Password string `json:"password"`
 }
 
+type NoticeTemplates struct {
+	Appointment string `json:"appointment"`
+	Reminder    string `json:"reminder"`
+}
+
+type UpdateNoticeTemplates struct {
+	Appointment *string `json:"appointment"`
+	Reminder    *string `json:"reminder"`
+}
+
 type EmailSettings struct {
 	Status   bool   `json:"status" db:"status"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Host     string `json:"host"`
-	Port     string `json:"port"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Host     string `json:"host" binding:"required"`
+	Port     string `json:"port" binding:"required"`
 }
