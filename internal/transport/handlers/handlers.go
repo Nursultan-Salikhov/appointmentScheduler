@@ -50,6 +50,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				noticeTemplates.PUT("/", h.UpdateNoticeTemplates)
 				noticeTemplates.DELETE("/", h.DeleteNoticeTemplates)
 			}
+
+			email := settings.Group("/email")
+			{
+				email.POST("/", h.CreateEmailSet)
+				email.GET("/", h.GetEmailSet)
+				email.PUT("/", h.UpdateEmailSet)
+				email.DELETE("/", h.DeleteEmailSet)
+			}
 		}
 	}
 

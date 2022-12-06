@@ -24,14 +24,6 @@ type UpdateNoticeTemplates struct {
 	Reminder    *string `json:"reminder"`
 }
 
-type EmailSettings struct {
-	Status   bool   `json:"status" db:"status"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Host     string `json:"host" binding:"required"`
-	Port     string `json:"port" binding:"required"`
-}
-
 func (u UpdateNoticeTemplates) Validate() error {
 	if u.Appointment == nil && u.Reminder == nil {
 		return errors.New("UpdateNoticeTemplates struct don't have values")

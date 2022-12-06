@@ -33,11 +33,19 @@ type NoticeTemplates interface {
 	Delete(userId int) error
 }
 
+type EmailSettings interface {
+	Create(userId int, s models.EmailSettings) error
+	Get(userId int) (models.NoticeTemplates, error)
+	Update(userId int, s models.UpdateEmailSettings) error
+	Delete(userId int) error
+}
+
 type Repository struct {
 	Authorization
 	Schedule
 	Appointment
 	NoticeTemplates
+	EmailSettings
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -46,5 +54,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Schedule:        NewSchedulePostgres(db),
 		Appointment:     NewAppointmentPostgres(db),
 		NoticeTemplates: NewNoticeTemplatesPostgres(db),
+		EmailSettings:   NewEmailSettingsPostgres(db),
 	}
 }

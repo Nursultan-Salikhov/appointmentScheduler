@@ -35,6 +35,13 @@ type NoticeTemplates interface {
 	Delete(userId int) error
 }
 
+type EmailSettings interface {
+	Create(userId int, s models.EmailSettings) error
+	Get(userId int) (models.NoticeTemplates, error)
+	Update(userId int, s models.UpdateEmailSettings) error
+	Delete(userId int) error
+}
+
 type Notices interface {
 	SendMessage(recipient, text string) error
 	CreateReminder(recipient, text string, rTime time.Time) error
@@ -45,6 +52,7 @@ type Service struct {
 	Schedule
 	Appointment
 	NoticeTemplates
+	EmailSettings
 }
 
 func NewService(repo *repository.Repository) *Service {
@@ -53,6 +61,7 @@ func NewService(repo *repository.Repository) *Service {
 		Schedule:        NewScheduleService(repo.Schedule),
 		Appointment:     NewAppointmentService(repo.Appointment),
 		NoticeTemplates: NewNoticeTemplatesService(repo.NoticeTemplates),
+		EmailSettings:   NewEmailSettingsService(repo.EmailSettings),
 	}
 }
 
