@@ -33,13 +33,23 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		}
 
 		appointments := user.Group("/appointments")
-
 		{
 			appointments.POST("/", h.CreateAppointment)
 			appointments.GET("/:day", h.GetAppointments)
 			appointments.GET("/:day/:time", h.GetClientInfo)
 			appointments.PUT("/:clientId", h.UpdateAppointment)
 			appointments.DELETE("/:clientId", h.DeleteAppointment)
+		}
+
+		settings := user.Group("/settings")
+		{
+			noticeTemplates := settings.Group("/notice-templates")
+			{
+				noticeTemplates.POST("/", h.CreateNoticeTemplates)
+				noticeTemplates.GET("/", h.GetNoticeTemplates)
+				noticeTemplates.PUT("/", h.UpdateNoticeTemplates)
+				noticeTemplates.DELETE("/", h.DeleteNoticeTemplates)
+			}
 		}
 	}
 

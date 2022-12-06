@@ -26,16 +26,25 @@ type Appointment interface {
 	Delete(userId, clientId int) error
 }
 
+type NoticeTemplates interface {
+	Create(userId int, nt models.NoticeTemplates) error
+	Get(userId int) (models.NoticeTemplates, error)
+	Update(userId int, nt models.UpdateNoticeTemplates) error
+	Delete(userId int) error
+}
+
 type Repository struct {
 	Authorization
 	Schedule
 	Appointment
+	NoticeTemplates
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Authorization: NewAuthPostgres(db),
-		Schedule:      NewSchedulePostgres(db),
-		Appointment:   NewAppointmentPostgres(db),
+		Authorization:   NewAuthPostgres(db),
+		Schedule:        NewSchedulePostgres(db),
+		Appointment:     NewAppointmentPostgres(db),
+		NoticeTemplates: NewNoticeTemplatesPostgres(db),
 	}
 }

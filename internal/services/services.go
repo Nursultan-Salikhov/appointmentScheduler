@@ -28,17 +28,31 @@ type Appointment interface {
 	Delete(userId, clientId int) error
 }
 
+type NoticeTemplates interface {
+	Create(userId int, nt models.NoticeTemplates) error
+	Get(userId int) (models.NoticeTemplates, error)
+	Update(userId int, nt models.UpdateNoticeTemplates) error
+	Delete(userId int) error
+}
+
+type Notices interface {
+	SendMessage(recipient, text string) error
+	CreateReminder(recipient, text string, rTime time.Time) error
+}
+
 type Service struct {
 	Authorization
 	Schedule
 	Appointment
+	NoticeTemplates
 }
 
 func NewService(repo *repository.Repository) *Service {
 	return &Service{
-		Authorization: NewAuthService(repo.Authorization),
-		Schedule:      NewScheduleService(repo.Schedule),
-		Appointment:   NewAppointmentService(repo.Appointment),
+		Authorization:   NewAuthService(repo.Authorization),
+		Schedule:        NewScheduleService(repo.Schedule),
+		Appointment:     NewAppointmentService(repo.Appointment),
+		NoticeTemplates: NewNoticeTemplatesService(repo.NoticeTemplates),
 	}
 }
 
