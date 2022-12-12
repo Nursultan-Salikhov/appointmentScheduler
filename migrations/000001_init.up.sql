@@ -54,7 +54,7 @@ CREATE TABLE email_settings
     user_id int references users (id) on delete cascade not null unique,
     status boolean not null default false,
     email varchar(255),
-    password_hash varchar(255),
+    password bytea,
     host varchar(255),
     port int
 );
