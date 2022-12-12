@@ -45,10 +45,9 @@ func encryptAES(data string) (string, error) {
 	}
 
 	cipherData := aesgcm.Seal(nil, nonce, []byte(data), nil)
-	fmt.Printf("nonce - %x \ncipherData - %x\n", nonce, cipherData)
 
 	res := fmt.Sprintf("%s", append(nonce, cipherData...))
-	fmt.Println("union", res)
+
 	return res, nil
 }
 
@@ -67,8 +66,6 @@ func decryptAES(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	fmt.Printf("union -%s\n nonce - %x\n cipherData - %x\n", data, data[:nonceLen], data[nonceLen:])
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
