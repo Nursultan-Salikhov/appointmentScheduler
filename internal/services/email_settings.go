@@ -14,11 +14,27 @@ func NewEmailSettingsService(repo repository.EmailSettings) *EmailSettingsServic
 }
 
 func (e *EmailSettingsService) Create(userId int, s models.EmailSettings) error {
+	var err error
+	s.Password, err = encryptAES(s.Password)
+	if err != nil {
+		return err
+	}
+
 	return e.repo.Create(userId, s)
 }
 
-func (e *EmailSettingsService) Get(userId int) (models.NoticeTemplates, error) {
-	return e.repo.Get(userId)
+func (e *EmailSettingsService) Get(userId int) (models.EmailSettings, error) {
+	esData, err := e.repo.Get(userId)
+	if err != nil {
+		return models.EmailSettings{}, err
+	}
+
+	esData.Password, err = decryptAES([]byte(esData.Password))
+	if err != nil {
+		return models.EmailSettings{}, err
+	}
+
+	return esData, nil
 }
 
 func (e *EmailSettingsService) Update(userId int, s models.UpdateEmailSettings) error {

@@ -35,7 +35,7 @@ type NoticeTemplates interface {
 
 type EmailSettings interface {
 	Create(userId int, s models.EmailSettings) error
-	Get(userId int) (models.NoticeTemplates, error)
+	Get(userId int) (models.EmailSettings, error)
 	Update(userId int, s models.UpdateEmailSettings) error
 	Delete(userId int) error
 }

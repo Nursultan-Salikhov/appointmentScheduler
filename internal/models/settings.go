@@ -3,11 +3,11 @@ package models
 import "errors"
 
 type EmailSettings struct {
-	Status   bool   `json:"status" db:"status"`
+	Status   bool   `json:"status" `
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 	Host     string `json:"host" binding:"required"`
-	Port     string `json:"port" binding:"required"`
+	Port     int    `json:"port" binding:"required"`
 }
 
 type UpdateEmailSettings struct {
@@ -15,7 +15,7 @@ type UpdateEmailSettings struct {
 	Email    *string `json:"email"`
 	Password *string `json:"password"`
 	Host     *string `json:"host"`
-	Port     *string `json:"port"`
+	Port     *int    `json:"port"`
 }
 
 func (u UpdateEmailSettings) Validate() error {

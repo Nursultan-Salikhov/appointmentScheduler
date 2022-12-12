@@ -3,15 +3,12 @@ package services
 import (
 	"appointmentScheduler/internal/models"
 	"appointmentScheduler/internal/repository"
-	"crypto/sha1"
 	"errors"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 
 const (
-	salt       = "ghafbn6badgnevh54n"
 	signingKey = "wtfLaeaH43visotNMTEa"
 	tokenTTL   = time.Hour * 6
 )
@@ -32,13 +29,6 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 func (a *AuthService) CreateUser(user models.User) (int, error) {
 	user.Password = generatePasswordHash(user.Password)
 	return a.repo.CreateUser(user)
-}
-
-func generatePasswordHash(password string) string {
-	hash := sha1.New()
-	hash.Write([]byte(password))
-
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
 func (a *AuthService) GenerateToken(username, password string) (string, error) {

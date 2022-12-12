@@ -41,6 +41,7 @@ const (
 	columnAppointmentTemplate = "appointment_template"
 	columnReminderTemplate    = "reminder_template"
 	columnStatus              = "status"
+	columnPassword            = "password"
 	columnHOST                = "host"
 	columnPort                = "port"
 )
