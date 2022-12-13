@@ -44,7 +44,25 @@ func (h *Handler) GetEmailSet(c *gin.Context) {
 }
 
 func (h *Handler) UpdateEmailSet(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
+	var ues models.UpdateEmailSettings
+	err = c.BindJSON(&ues)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.service.EmailSettings.Update(userId, ues)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "done"})
 }
 
 func (h *Handler) DeleteEmailSet(c *gin.Context) {

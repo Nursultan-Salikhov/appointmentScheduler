@@ -38,9 +38,18 @@ func (e *EmailSettingsService) Get(userId int) (models.EmailSettings, error) {
 }
 
 func (e *EmailSettingsService) Update(userId int, s models.UpdateEmailSettings) error {
-	if err := s.Validate(); err != nil {
+	err := s.Validate()
+	if err != nil {
 		return err
 	}
+
+	if s.Password != nil {
+		*s.Password, err = encryptAES(*s.Password)
+		if err != nil {
+			return err
+		}
+	}
+
 	return e.repo.Update(userId, s)
 }
 

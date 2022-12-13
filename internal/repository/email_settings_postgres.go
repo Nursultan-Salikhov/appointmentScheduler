@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"strings"
 )
 
 type EmailSettingsPostgres struct {
@@ -39,8 +40,49 @@ func (e EmailSettingsPostgres) Get(userId int) (models.EmailSettings, error) {
 }
 
 func (e EmailSettingsPostgres) Update(userId int, s models.UpdateEmailSettings) error {
-	//TODO implement me
-	panic("implement me")
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if s.Status != nil {
+		setValues = append(setValues, fmt.Sprintf("%s=$%d", columnStatus, argId))
+		args = append(args, *s.Status)
+		argId++
+	}
+
+	if s.Email != nil {
+		setValues = append(setValues, fmt.Sprintf("%s=$%d", columnEmail, argId))
+		args = append(args, *s.Email)
+		argId++
+	}
+
+	if s.Password != nil {
+		setValues = append(setValues, fmt.Sprintf("%s=$%d", columnPassword, argId))
+		args = append(args, *s.Password)
+		argId++
+	}
+
+	if s.Host != nil {
+		setValues = append(setValues, fmt.Sprintf("%s=$%d", columnHOST, argId))
+		args = append(args, *s.Host)
+		argId++
+	}
+
+	if s.Port != nil {
+		setValues = append(setValues, fmt.Sprintf("%s=$%d", columnPort, argId))
+		args = append(args, *s.Port)
+		argId++
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+
+	query := fmt.Sprintf("UPDATE %s SET %s WHERE %s=$%d", tableEmailSettings,
+		setQuery, columnUserId, argId)
+
+	args = append(args, userId)
+
+	_, err := e.db.Exec(query, args...)
+	return err
 }
 
 func (e EmailSettingsPostgres) Delete(userId int) error {
