@@ -2,9 +2,8 @@ package services
 
 import (
 	"appointmentScheduler/internal/models"
+	"appointmentScheduler/internal/notices"
 	"appointmentScheduler/internal/repository"
-	"errors"
-	"time"
 )
 
 type Authorization interface {
@@ -21,7 +20,7 @@ type Schedule interface {
 }
 
 type Appointment interface {
-	Create(appDate models.AllAppointmentDate) (int, error)
+	Create(appDate models.AllAppointmentData) (int, error)
 	Get(userId int, day string) ([]models.Appointment, error)
 	GetClientInfo(userId int, day, time string) (models.Client, error)
 	Update(userId, clientId int, newApp models.Appointment) error
@@ -43,39 +42,31 @@ type EmailSettings interface {
 }
 
 type Notices interface {
-	SendMessage(recipient, text string) error
-	CreateReminder(recipient, text string, rTime time.Time) error
+	Send(nd NoticeData) error
+}
+
+type settings struct {
+	NoticeTemplates
+	EmailSettings
 }
 
 type Service struct {
 	Authorization
 	Schedule
 	Appointment
-	NoticeTemplates
-	EmailSettings
+	Notices
+	Settings settings
 }
 
-func NewService(repo *repository.Repository) *Service {
+func NewService(repo *repository.Repository, n *notices.Notice) *Service {
 	return &Service{
-		Authorization:   NewAuthService(repo.Authorization),
-		Schedule:        NewScheduleService(repo.Schedule),
-		Appointment:     NewAppointmentService(repo.Appointment),
-		NoticeTemplates: NewNoticeTemplatesService(repo.NoticeTemplates),
-		EmailSettings:   NewEmailSettingsService(repo.EmailSettings),
+		Authorization: NewAuthService(repo.Authorization),
+		Schedule:      NewScheduleService(repo.Schedule),
+		Appointment:   NewAppointmentService(repo.Appointment),
+		Notices:       NewNoticeService(n),
+		Settings: settings{
+			NoticeTemplates: NewNoticeTemplatesService(repo.NoticeTemplates),
+			EmailSettings:   NewEmailSettingsService(repo.EmailSettings),
+		},
 	}
-}
-
-func checkDate(day string) error {
-	now := time.Now()
-	now = now.Add(-(time.Hour * 24))
-
-	workDay, err := time.Parse(dateFormat, day)
-	if err != nil {
-		return err
-	}
-
-	if now.After(workDay) {
-		return errors.New("entered a date that has already passed")
-	}
-	return nil
 }

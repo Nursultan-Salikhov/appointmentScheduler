@@ -19,7 +19,7 @@ func (h *Handler) CreateEmailSet(c *gin.Context) {
 		return
 	}
 
-	err = h.service.EmailSettings.Create(userId, es)
+	err = h.service.Settings.EmailSettings.Create(userId, es)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -34,7 +34,7 @@ func (h *Handler) GetEmailSet(c *gin.Context) {
 		return
 	}
 
-	es, err := h.service.EmailSettings.Get(userId)
+	es, err := h.service.Settings.EmailSettings.Get(userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -56,7 +56,7 @@ func (h *Handler) UpdateEmailSet(c *gin.Context) {
 		return
 	}
 
-	err = h.service.EmailSettings.Update(userId, ues)
+	err = h.service.Settings.EmailSettings.Update(userId, ues)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -71,7 +71,7 @@ func (h *Handler) DeleteEmailSet(c *gin.Context) {
 		return
 	}
 
-	err = h.service.EmailSettings.Delete(userId)
+	err = h.service.Settings.EmailSettings.Delete(userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

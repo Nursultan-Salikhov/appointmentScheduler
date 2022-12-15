@@ -17,7 +17,7 @@ func NewAppointmentPostgres(db *sqlx.DB) *AppointmentPostgres {
 	return &AppointmentPostgres{db: db}
 }
 
-func (a *AppointmentPostgres) Create(appDate models.AllAppointmentDate) (int, error) {
+func (a *AppointmentPostgres) Create(appDate models.AllAppointmentData) (int, error) {
 
 	//Check if a date is available for appointment, or create new date
 	appointmentId, err := a.getAppointmentId(appDate.Client.UserId, appDate.AppData.AppDay, appDate.AppData.AppTime)

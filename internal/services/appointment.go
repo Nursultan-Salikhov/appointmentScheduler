@@ -14,8 +14,8 @@ func NewAppointmentService(repo repository.Appointment) *AppointmentService {
 	return &AppointmentService{repo: repo}
 }
 
-func (a *AppointmentService) Create(appData models.AllAppointmentDate) (int, error) {
-	if err := checkDate(appData.AppData.AppTime); err != nil {
+func (a *AppointmentService) Create(appData models.AllAppointmentData) (int, error) {
+	if err := checkDate(appData.AppData.AppDay); err != nil {
 		return 0, err
 	}
 

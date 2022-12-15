@@ -18,7 +18,7 @@ type Schedule interface {
 }
 
 type Appointment interface {
-	Create(appDate models.AllAppointmentDate) (int, error)
+	Create(appDate models.AllAppointmentData) (int, error)
 	CheckWorkDay(userId int, workDay string) bool
 	Get(userId int, day string) ([]models.Appointment, error)
 	GetClientInfo(userId int, day, time string) (models.Client, error)

@@ -19,7 +19,7 @@ func (h *Handler) CreateNoticeTemplates(c *gin.Context) {
 		return
 	}
 
-	err = h.service.NoticeTemplates.Create(userId, nt)
+	err = h.service.Settings.NoticeTemplates.Create(userId, nt)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -34,7 +34,7 @@ func (h *Handler) GetNoticeTemplates(c *gin.Context) {
 		return
 	}
 
-	nt, err := h.service.NoticeTemplates.Get(userId)
+	nt, err := h.service.Settings.NoticeTemplates.Get(userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -56,7 +56,7 @@ func (h *Handler) UpdateNoticeTemplates(c *gin.Context) {
 		return
 	}
 
-	err = h.service.NoticeTemplates.Update(userId, unt)
+	err = h.service.Settings.NoticeTemplates.Update(userId, unt)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -71,7 +71,7 @@ func (h *Handler) DeleteNoticeTemplates(c *gin.Context) {
 		return
 	}
 
-	err = h.service.NoticeTemplates.Delete(userId)
+	err = h.service.Settings.NoticeTemplates.Delete(userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

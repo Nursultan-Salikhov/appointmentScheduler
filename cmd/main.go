@@ -1,6 +1,7 @@
 package main
 
 import (
+	"appointmentScheduler/internal/notices"
 	"appointmentScheduler/internal/repository"
 	"appointmentScheduler/internal/server"
 	"appointmentScheduler/internal/services"
@@ -32,7 +33,8 @@ func main() {
 	}
 
 	rep := repository.NewRepository(db)
-	service := services.NewService(rep)
+	n := notices.NewNotice()
+	service := services.NewService(rep, n)
 	handler := handlers.NewHandler(service)
 	srv := new(server.Server)
 
