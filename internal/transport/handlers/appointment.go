@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 const (
@@ -36,7 +37,50 @@ func (h *Handler) CreateAppointment(c *gin.Context) {
 		return
 	}
 
-	noticeStatus := sendNotice(id, &allAppData, h)
+	noticeStatus := "done"
+	nt, err := h.service.Settings.NoticeTemplates.Get(allAppData.Client.UserId)
+	if err != nil {
+		logrus.Errorf("failed to get notice templates")
+		logrus.Error(err.Error())
+		noticeStatus = "internal error"
+	} else {
+		noticeStatus = sendNotice(nt.Appointment, allAppData.NoticeSource, &allAppData.Client, h)
+
+		// for reminder
+		go func(userId int, noticeSource, day, hour string) {
+			reminderTime := day + " " + hour + " +0300"
+
+			t, err := time.Parse("2006-01-02 15:04 -0700", reminderTime)
+			if err != nil {
+				logrus.Error("reminder don't start")
+				logrus.Error(err.Error())
+				return
+			}
+
+			// A reminder an hour before the appointment
+			t = t.Add(-(time.Hour))
+			time.Sleep(time.Until(t))
+
+			go func() {
+				nt, err := h.service.Settings.NoticeTemplates.Get(userId)
+				if err != nil {
+					logrus.Errorf("failed to get notice templates for reminder")
+					logrus.Error(err.Error())
+					return
+				}
+
+				client, err := h.service.Appointment.GetClientInfo(userId, day, hour)
+				if err != nil {
+					logrus.Error("failed to get client info")
+					logrus.Error(err.Error())
+					return
+				}
+
+				logrus.Infoln("sendResult - ", sendNotice(nt.Reminder, noticeSource, &client, h), hour)
+			}()
+
+		}(allAppData.Client.UserId, allAppData.NoticeSource, allAppData.AppData.AppDay, allAppData.AppData.AppTime)
+	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "done",
 		"id": id, "notice_status": noticeStatus})
@@ -89,9 +133,9 @@ func (h *Handler) GetClientInfo(c *gin.Context) {
 	}
 
 	day := c.Param("day")
-	time := c.Param("time")
+	hour := c.Param("time")
 
-	clientInfo, err := h.service.Appointment.GetClientInfo(userId, day, time)
+	clientInfo, err := h.service.Appointment.GetClientInfo(userId, day, hour)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -129,51 +173,44 @@ func (h *Handler) UpdateAppointment(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
-func sendNotice(clientId int, allAppData *models.AllAppointmentData, h *Handler) string {
+func sendNotice(text, noticeSource string, client *models.Client, h *Handler) string {
 	var nd services.NoticeData
 
-	nt, err := h.service.Settings.NoticeTemplates.Get(allAppData.Client.UserId)
-	if err != nil {
-		logrus.Errorf("failed to get notice templates")
-		logrus.Error(err.Error())
-		return "internal error"
-	}
-	nd.Text = nt.Appointment
+	nd.ClientName = client.Name
+	nd.Text = text
 
-	nd.ClientName = allAppData.Client.Name
-
-	switch allAppData.NoticeSource {
+	switch noticeSource {
 
 	case noticeDisable:
 		return noticeDisable
 
 	case noticeMail:
-		es, err := h.service.Settings.EmailSettings.Get(allAppData.Client.UserId)
+		es, err := h.service.Settings.EmailSettings.Get(client.UserId)
 		if err != nil {
-			logrus.Errorf("error receiving mail settings, user_id - %d", allAppData.Client.UserId)
+			logrus.Errorf("error receiving mail settings, user_id - %d", client.UserId)
 			logrus.Error(err.Error())
 			return "internal error"
 		}
 
 		if es.Status == false {
 			logrus.Warnf("the selected notification sending source is not available: user_id -%d, source - %s",
-				allAppData.Client.UserId, noticeMail)
+				client.UserId, noticeMail)
 			return "not available"
 		}
 
 		nd.SourceData = es
 		nd.Source = services.SourceMail
-		nd.Recipient = allAppData.Client.Email
+		nd.Recipient = client.Email
 
 	default:
-		logrus.Warnf("unknown notice source - %s : user_id - %d", allAppData.NoticeSource, allAppData.Client.UserId)
-		return fmt.Sprintf("unknown source: %s", allAppData.NoticeSource)
+		logrus.Warnf("unknown notice source - %s : user_id - %d", noticeSource, client.UserId)
+		return fmt.Sprintf("unknown source: %s", noticeSource)
 
 	}
 
-	err = h.service.Notices.Send(nd)
+	err := h.service.Notices.Send(nd)
 	if err != nil {
-		logrus.Errorf("notice send failed: user_id - %d, client_id - %d", allAppData.Client.UserId, clientId)
+		logrus.Errorf("notice send failed: user_id - %d", client.UserId)
 		logrus.Error(err.Error())
 		return "input error"
 	}
